@@ -22,8 +22,11 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
 # MCP
 from mcp.server.fastmcp import FastMCP
-
-mcp = FastMCP("gsc-server")
+from mcp.server.transport_security import TransportSecuritySettings
+mcp = FastMCP(
+    "gsc-server",
+    transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+)
 
 def _expand_path(path: Optional[str]) -> Optional[str]:
     """Expand ``~`` and environment variables in a path, returning None for empty input.
