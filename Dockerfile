@@ -1,12 +1,15 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+
 WORKDIR /app
 
-# Copy dependency files first for layer caching — deps only reinstall when these change
+# Dependencies first for layer caching
 COPY pyproject.toml README.md ./
 RUN uv sync --no-cache --no-install-project
 
-# Copy application code
+# Application code + entrypoint
 COPY gsc_server.py .
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
-# Default to stdio transport; override with MCP_TRANSPORT=sse for remote/network use
-CMD ["uv", "run", "--no-sync", "python", "gsc_server.py"]
+# Railway sets PORT env var; entrypoint.sh handles it
+CMD ["./entrypoint.sh"]
